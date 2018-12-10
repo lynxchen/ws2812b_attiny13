@@ -1,3 +1,8 @@
+// Implementation of WS2812B protocol for the attiny13
+//
+// Author: Daan Sprenkels <hello@dsprenkels.com>
+// License: MIT
+
 #include <avr/io.h>
 #include <inttypes.h>
 
