@@ -1,24 +1,21 @@
-MCU=attiny13a
-AVRDUDEMCU=t13
+MCU=attiny13
+F_CPU=9600000
 CC=avr-gcc
-CFLAGS += -std=c11 -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wformat-security \
-          -g -Os -mcall-prologues -mmcu=$(MCU)
-OBJ2HEX=/usr/bin/avr-objcopy
-AVRDUDE=/usr/bin/avrdude
-TARGET=example
+LD=avr-ld
+OBJCOPY=avr-objcopy
+SIZE=avr-size
+AVRDUDE=avrdude
+CFLAGS=-std=c11 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
+TARGET=main
 
-$(TARGET): example.c ws2812b_attiny13.o
+SRCS = example.c ws2812b_attiny13.c
 
-$(TARGET).hex: $(TARGET)
-	$(OBJ2HEX) -j .text -j .data -O ihex $(TARGET) $(TARGET).hex
+all:
+	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS}
+	${OBJCOPY} -j .text -j .data -O ihex ${TARGET}.o ${TARGET}.hex
+	
+flash:
+	$(AVRDUDE) -c usbtiny -p t13 -U flash:w:${TARGET}.hex:i
 
-.PHONY: size
-size: $(TARGET)
-	avr-size $(TARGET)
-
-flash: $(TARGET).hex
-	sudo $(AVRDUDE) -p $(AVRDUDEMCU) -c usbasp -U flash:w:$(TARGET).hex:i -U lfuse:w:0x7a:m -U hfuse:w:0xff:m
-
-.PHONY: clean
 clean:
-	rm -f $(TARGET) $(TARGET).hex *.obj *.o
+	rm -f *.c~ *.o *.elf *.hex

@@ -3,8 +3,6 @@
 // Author: Daan Sprenkels <hello@dsprenkels.com>
 // Description: A toy implementation for using WS2812 RBG leds
 
-#define F_CPU 9600000UL
-
 #include "ws2812b_attiny13.h"
 #include <inttypes.h>
 #include <stdbool.h>
@@ -14,34 +12,26 @@ const struct color {
     const uint8_t red;
     const uint8_t green;
     const uint8_t blue;
-} COLORS[] = {
-    {0xFF, 0xFF, 0xFF}, // white
-    {0x00, 0x00, 0x00}, // off
-    {0xFF, 0xFF, 0xFF}, // white
-    {0x00, 0x00, 0x00}, // off
-    {0xFF, 0xFF, 0xFF}, // white
-    {0x00, 0x00, 0x00}, // off
-    {0xFF, 0x00, 0x00}, // red
-    {0xFF, 0x00, 0x00}, // red
-    {0x00, 0x00, 0x00}, // off
-    {0x00, 0xFF, 0x00}, // green
-    {0x00, 0xFF, 0x00}, // green
-    {0x00, 0x00, 0x00}, // off
-    {0x00, 0x00, 0xFF}, // blue
-    {0x00, 0x00, 0xFF}, // blue
-    {0x00, 0x00, 0x00}, // off
-    {0x00, 0x00, 0x00}, // off
-};
+} COLORS;
 
-int main() {
-    while (true) {
-        for (uint8_t i = 0; i < sizeof(COLORS) / sizeof(COLORS[0]); i++) {
-            
-            // Turn light on for some time
-            const struct color color = COLORS[i];
-            ws2812b_set_color(_BV(PB3), color.red/3, color.green/2, color.blue);
-            _delay_ms(500);
-            
-        }
+const int led_num=64;
+const uint8_t pin=_BV(PB0);
+
+int main() 
+{
+	uint8_t c=0;
+    while (true) 
+	{
+		for( uint8_t i = 0; i < led_num ; i++ )
+		{
+		uint8_t red=0,green=0,blue=0;	
+		if( c==0 ) { red=50; }
+		else if( c==1 ) { green=50; }
+		else if( c==2 ) { blue=50; }
+		c++; if(c==3){ c=0;}
+		ws2812b_set_color_no_reset( pin, red, green, blue);
+		}
+		ws2812b_reset( pin );
+		_delay_ms(500);
     }
 }

@@ -2,10 +2,20 @@
 //
 // Author: Daan Sprenkels <hello@dsprenkels.com>
 // License: MIT
+#include "ws2812b_attiny13.h"
 
-#include <avr/io.h>
-#include <inttypes.h>
-
+void ws2812b_set_color(const uint8_t pin_value, const uint8_t red, const uint8_t green, const uint8_t blue) {
+    DDRB |= pin_value;
+    PORTB &= ~pin_value;
+    _delay_us(50);
+    ws2812b_set_color_no_reset(pin_value, red, green, blue);
+}
+void ws2812b_reset(const uint8_t pin_value)
+{
+	DDRB |= pin_value;
+    PORTB &= ~pin_value;
+    _delay_us(50);
+}	
 void ws2812b_set_color_no_reset(const uint8_t pin_value, const uint8_t red, const uint8_t green, const uint8_t blue) {
     DDRB |= pin_value;
     const uint8_t portb = PORTB; // PORTB is volatile, so preload value
